@@ -1,6 +1,8 @@
-using System.Runtime.InteropServices.JavaScript;
+using System.Net;
+using System.Runtime.CompilerServices;
 using ApiClient.Services;
 using JetBrains.Annotations;
+using NSubstitute;
 
 namespace ApiClient.Tests.Unit.Services;
 
@@ -8,10 +10,12 @@ namespace ApiClient.Tests.Unit.Services;
 public class ExternalHttpServiceTests
 {
     private IExternalHttpService _sut;
+    private readonly IHttpClientWrapper _httpClientWrapper;
 
     public ExternalHttpServiceTests()
     {
-        _sut = new ExternalHttpService(new HttpClient());
+        _httpClientWrapper = Substitute.For<IHttpClientWrapper>(); 
+        _sut = new ExternalHttpService(_httpClientWrapper);
     }
 
     [Theory]
@@ -23,5 +27,19 @@ public class ExternalHttpServiceTests
         var ex = await Record.ExceptionAsync(() => _sut.GetAsync<object>(invalidUrl));
 
         Assert.IsType<ArgumentException>(ex);
+    }
+
+    [Theory]
+    [InlineData(HttpStatusCode.Unauthorized)]
+    [InlineData(HttpStatusCode.InternalServerError)]
+    public async Task GetAsync_WithAnUnsuccessfulResponse_ThrowsHttpRequestException(HttpStatusCode statusCode)
+    {
+        _httpClientWrapper
+            .GetAsync(Arg.Any<string>())
+            .Returns(new HttpResponseMessage(statusCode));
+        
+        var ex = await Record.ExceptionAsync(() => _sut.GetAsync<object>("https://valid.test-url.com"));
+        
+        Assert.IsType<HttpRequestException>(ex);
     }
 }

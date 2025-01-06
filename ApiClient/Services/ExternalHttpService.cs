@@ -4,9 +4,9 @@ namespace ApiClient.Services;
 
 public class ExternalHttpService : IExternalHttpService
 {
-    private readonly HttpClient _httpClient;
+    private readonly IHttpClientWrapper _httpClient;
 
-    public ExternalHttpService(HttpClient httpClient)
+    public ExternalHttpService(IHttpClientWrapper httpClient)
     {
         _httpClient = httpClient;
     }
