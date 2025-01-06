@@ -11,7 +11,7 @@ public class ExternalHttpServiceTests
 
     public ExternalHttpServiceTests()
     {
-        _sut = new ExternalHttpService();
+        _sut = new ExternalHttpService(new HttpClient());
     }
 
     [Theory]
@@ -21,7 +21,7 @@ public class ExternalHttpServiceTests
     public async Task GetAsync_WithAnInvalidUrl_ThrowsArgumentException(string invalidUrl)
     {
         var ex = await Record.ExceptionAsync(() => _sut.GetAsync<object>(invalidUrl));
-        
+
         Assert.IsType<ArgumentException>(ex);
     }
 }

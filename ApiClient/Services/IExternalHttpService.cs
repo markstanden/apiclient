@@ -2,5 +2,5 @@ namespace ApiClient;
 
 public interface IExternalHttpService
 {
-    Task<T> GetAsync<T>(string url);    
+    Task<T> GetAsync<T>(string url);
 }
