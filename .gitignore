@@ -1,0 +1,44 @@
+# Build output directories
+bin/
+obj/
+
+# Visual Studio files and folders
+.vs/
+*.user
+*.userosscache
+*.suo
+*.userprefs
+*.dbmdl
+*.dbproj.schemaview
+*.jfm
+*.pfx
+*.publishsettings
+
+# IDE-specific files
+.idea/
+.vscode/
+*.sln.iml
+*.[Rr]e[Ss]harper
+*.DotSettings.user
+
+# NuGet packages
+*.nupkg
+packages/
+*.nuget.props
+*.nuget.targets
+
+# Testing results
+TestResults/
+[Cc]overage*/
+*.coverage
+*.coveragexml
+
+# Temporary files
+*.swp
+*.tmp
+*.temp
+*~
+
+# Operating System files
+.DS_Store
+Thumbs.db
