@@ -21,6 +21,9 @@ public class ExternalHttpService : IExternalHttpService
         // await the response.
         var response = await _httpClient.GetAsync(url);
         
+        // Throws an HttpResponseException if the request was unsuccessful.
+        response.EnsureSuccessStatusCode();
+        
         // Get the content of the response.
         var content = await response.Content.ReadAsStringAsync();
         
