@@ -58,7 +58,7 @@ jobs:
         run: |
           # Parse the Cobertura coverage file to extract the coverage percentage
           COVERAGE=$(xmllint --xpath "string(//coverage/@line-rate)" ./TestResults/*/coverage.cobertura.xml)
-          echo "Code Coverage: $COVERAGE"
+          echo "Code coverage: $COVERAGE"
           
           # Compare with threshold (e.g., 80%)
           THRESHOLD=0.80
