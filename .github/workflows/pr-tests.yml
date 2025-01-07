@@ -49,3 +49,19 @@ jobs:
         with:
           name: code-coverage-report
           path: ./TestResults/*/coverage.cobertura.xml
+
+      - name: Check code coverage percentage
+        run: |
+          # Parse the Cobertura coverage file to extract the coverage percentage
+          COVERAGE=$(xmllint --xpath "string(//coverage/@line-rate)" ./TestResults/*/coverage.cobertura.xml)
+          echo "Code Coverage: $COVERAGE"
+          
+          # Compare with threshold (e.g., 80%)
+          THRESHOLD=0.80
+          if (( $(echo "$COVERAGE < $THRESHOLD" | bc -l) )); then
+            echo "Code coverage is below $THRESHOLD, failing the build."
+            exit 1
+          else
+            echo "Code coverage is above the threshold: $THRESHOLD."
+          fi
+        shell: bash
