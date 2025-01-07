@@ -11,6 +11,7 @@ namespace ApiClient.Tests.Unit.Services;
 [TestSubject(typeof(ExternalHttpService))]
 public class ExternalHttpServiceTests
 {
+    private const string TEST_URL = "https://valid.test-url.com";
     private IExternalHttpService _sut;
     private readonly IHttpClientWrapper _httpClientWrapper;
 
@@ -43,7 +44,7 @@ public class ExternalHttpServiceTests
         _httpClientWrapper.GetAsync(Arg.Any<string>()).Returns(new HttpResponseMessage(statusCode));
 
         var ex = await Record.ExceptionAsync(
-            () => _sut.GetAsync<object>("https://valid.test-url.com")
+            () => _sut.GetAsync<object>(TEST_URL)
         );
 
         Assert.IsType<HttpRequestException>(ex);
@@ -59,7 +60,7 @@ public class ExternalHttpServiceTests
         _httpClientWrapper.GetAsync(Arg.Any<string>()).Returns(response);
         var expected = new TestData("TestID", true);
 
-        var result = await _sut.GetAsync<TestData>("https://valid.test-url.com");
+        var result = await _sut.GetAsync<TestData>(TEST_URL);
         
         Assert.Equal(expected, result);
     }
@@ -73,8 +74,7 @@ public class ExternalHttpServiceTests
         };
         _httpClientWrapper.GetAsync(Arg.Any<string>()).Returns(response);
 
-        var result = await Record.ExceptionAsync(() => _sut.GetAsync<TestData>("https://valid.test-url.com"));
-
+        var result = await Record.ExceptionAsync(() => _sut.GetAsync<TestData>(TEST_URL));
         Assert.IsType<JsonException>(result);
     }
 }
