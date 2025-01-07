@@ -6,7 +6,8 @@ namespace ApiClient.Tests.Unit.Configuration;
 [TestSubject(typeof(ApiClientConfigurationBuilder))]
 public class ApiClientConfigurationBuilderTests
 {
-
+    private const string BASE_URL = "https://valid.test.url";
+    
     private ApiClientConfigurationBuilder _sut;
     
     public ApiClientConfigurationBuilderTests()
@@ -35,22 +36,22 @@ public class ApiClientConfigurationBuilderTests
     [Fact]
     public void Build_WithBaseUrlOnly_BuildsConfiguration()
     {
-        var baseUrl = "https://valid.test.url";
+        _sut.WithBaseUrl(BASE_URL);
         
-        var configuration = _sut.WithBaseUrl(baseUrl).Build();
+        var result = _sut.Build();
         
-        Assert.NotNull(configuration);
-        Assert.IsType<ApiClientConfiguration>(configuration);
+        Assert.NotNull(result);
+        Assert.IsType<ApiClientConfiguration>(result);
     }
     
     [Fact]
     public void Build_WithBaseUrlOnly_SetsConfigurationBaseUrl()
     {
-        var baseUrl = "https://valid.test.url";
+        _sut.WithBaseUrl(BASE_URL);
         
-        var configuration = _sut.WithBaseUrl(baseUrl).Build();
+        var result = _sut.Build();
      
-        Assert.Equal(baseUrl, configuration.BaseUrl);
+        Assert.Equal(BASE_URL, result.BaseUrl);
     }
 
     [Theory]
