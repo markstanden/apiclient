@@ -15,12 +15,21 @@ public class ApiClientConfigurationBuilderTests
     }
 
     [Fact]
-    public void Build_WithNullConfiguration_ThrowsArgumentNullException()
+    public void Build_WithoutConfiguration_ThrowsInvalidOperationException()
     {
         var exception = Record.Exception(() => _sut.Build());
         
         Assert.NotNull(exception);
-        Assert.IsType<ArgumentNullException>(exception);
+        Assert.IsType<InvalidOperationException>(exception);
+    }
+    
+    [Fact(Skip = "Waiting for other build options first")]
+    public void Build_WithoutSettingBaseUrl_ThrowsInvalidOperationException()
+    {
+        var exception = Record.Exception(() => _sut.Build());
+
+        Assert.NotNull(exception);
+        Assert.IsType<InvalidOperationException>(exception);
     }
     
     [Theory]
@@ -35,12 +44,5 @@ public class ApiClientConfigurationBuilderTests
         Assert.IsType<ArgumentException>(exception);
     }
 
-    [Fact(Skip = "Waiting for other build options first")]
-    public void Build_WithoutSettingBaseUrl_ThrowsArgumentException()
-    {
-        var exception = Record.Exception(() => _sut.Build());
-
-        Assert.NotNull(exception);
-        Assert.IsType<ArgumentException>(exception);
-    }
+   
 }
