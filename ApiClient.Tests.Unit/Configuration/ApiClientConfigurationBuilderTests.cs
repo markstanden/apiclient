@@ -31,7 +31,28 @@ public class ApiClientConfigurationBuilderTests
         Assert.NotNull(exception);
         Assert.IsType<InvalidOperationException>(exception);
     }
+
+    [Fact]
+    public void Build_WithBaseUrlOnly_BuildsConfiguration()
+    {
+        var baseUrl = "https://valid.test.url";
+        
+        var configuration = _sut.WithBaseUrl(baseUrl).Build();
+        
+        Assert.NotNull(configuration);
+        Assert.IsType<ApiClientConfiguration>(configuration);
+    }
     
+    [Fact]
+    public void Build_WithBaseUrlOnly_SetsConfigurationBaseUrl()
+    {
+        var baseUrl = "https://valid.test.url";
+        
+        var configuration = _sut.WithBaseUrl(baseUrl).Build();
+     
+        Assert.Equal(baseUrl, configuration.BaseUrl);
+    }
+
     [Theory]
     [InlineData(null)]
     [InlineData("")]
