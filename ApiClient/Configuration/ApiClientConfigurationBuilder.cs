@@ -4,10 +4,11 @@ public class ApiClientConfigurationBuilder
 {
     private string _baseUrl;
     
-    public ApiClientConfigurationBuilder()
-    {
-    }
-
+    /// <summary>
+    /// Builds the configuration
+    /// </summary>
+    /// <returns></returns>
+    /// <exception cref="InvalidOperationException">Throws if Base URL is not set</exception>
     public ApiClientConfiguration Build()
     {
         if (string.IsNullOrEmpty(_baseUrl)) throw new InvalidOperationException("Base url not set");
@@ -21,7 +22,7 @@ public class ApiClientConfigurationBuilder
     /// Adds a base url to the ApiClientConfiguration
     /// </summary>
     /// <param name="baseUrl">The base url of the request</param>
-    /// <returns></returns>
+    /// <returns>The current builder instance with baseUrl set</returns>
     public ApiClientConfigurationBuilder WithBaseUrl(string baseUrl)
     {
         if (string.IsNullOrWhiteSpace(baseUrl))

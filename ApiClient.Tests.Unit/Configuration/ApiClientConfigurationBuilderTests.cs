@@ -66,5 +66,26 @@ public class ApiClientConfigurationBuilderTests
         Assert.IsType<ArgumentException>(exception);
     }
 
-   
+    [Fact]
+    public void WithBaseUrl_WithValidBaseUrl_ReturnsBuilder()
+    {
+        _sut.WithBaseUrl(BASE_URL);
+
+        var result = _sut;
+        
+        Assert.NotNull(result);
+        Assert.IsType<ApiClientConfigurationBuilder>(result);
+    }
+    
+    [Fact]
+    public void WithBaseUrl_ChainedWithBuildMethod_ReturnsConfigurationWithBaseUrlSet()
+    {
+        _sut.WithBaseUrl(BASE_URL);
+
+        var result = _sut.WithBaseUrl(BASE_URL).Build();
+        
+        Assert.Equal(BASE_URL, result.BaseUrl); 
+    }
+
+
 }
