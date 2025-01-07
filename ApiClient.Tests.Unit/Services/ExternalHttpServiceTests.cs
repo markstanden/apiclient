@@ -14,7 +14,7 @@ public class ExternalHttpServiceTests
 
     public ExternalHttpServiceTests()
     {
-        _httpClientWrapper = Substitute.For<IHttpClientWrapper>(); 
+        _httpClientWrapper = Substitute.For<IHttpClientWrapper>();
         _sut = new ExternalHttpService(_httpClientWrapper);
     }
 
@@ -32,14 +32,16 @@ public class ExternalHttpServiceTests
     [Theory]
     [InlineData(HttpStatusCode.Unauthorized)]
     [InlineData(HttpStatusCode.InternalServerError)]
-    public async Task GetAsync_WithAnUnsuccessfulResponse_ThrowsHttpRequestException(HttpStatusCode statusCode)
+    public async Task GetAsync_WithAnUnsuccessfulResponse_ThrowsHttpRequestException(
+        HttpStatusCode statusCode
+    )
     {
-        _httpClientWrapper
-            .GetAsync(Arg.Any<string>())
-            .Returns(new HttpResponseMessage(statusCode));
-        
-        var ex = await Record.ExceptionAsync(() => _sut.GetAsync<object>("https://valid.test-url.com"));
-        
+        _httpClientWrapper.GetAsync(Arg.Any<string>()).Returns(new HttpResponseMessage(statusCode));
+
+        var ex = await Record.ExceptionAsync(
+            () => _sut.GetAsync<object>("https://valid.test-url.com")
+        );
+
         Assert.IsType<HttpRequestException>(ex);
     }
 }

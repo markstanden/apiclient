@@ -1,6 +1,6 @@
 namespace ApiClient.Services;
 
-public class HttpClientWrapper: IHttpClientWrapper
+public class HttpClientWrapper : IHttpClientWrapper
 {
     private readonly HttpClient _httpClient;
 
@@ -8,7 +8,7 @@ public class HttpClientWrapper: IHttpClientWrapper
     {
         _httpClient = httpClient;
     }
-    
+
     public Task<HttpResponseMessage> GetAsync(string url)
     {
         return _httpClient.GetAsync(url);
