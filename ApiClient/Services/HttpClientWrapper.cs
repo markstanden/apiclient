@@ -1,5 +1,8 @@
+using System.Diagnostics.CodeAnalysis;
+
 namespace ApiClient.Services;
 
+[ExcludeFromCodeCoverage]
 public class HttpClientWrapper : IHttpClientWrapper
 {
     private readonly HttpClient _httpClient;

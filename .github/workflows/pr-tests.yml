@@ -17,18 +17,55 @@ jobs:
         uses: actions/setup-dotnet@v3
         with:
           dotnet-version: '8.0.x'
-      
+
+      - name: Cache NuGet packages
+        uses: actions/cache@v3
+        with:
+          path: ~/.nuget/packages
+          key: ${{ runner.os }}-nuget-${{ hashFiles('**/*.csproj') }}
+          restore-keys: |
+            ${{ runner.os }}-nuget-
+
       - name: Install CSharpier
         run: dotnet tool install -g csharpier
-      
+
       - name: Check formatting
         run: dotnet csharpier --check .
 
       - name: Restore dependencies
         run: dotnet restore
 
+      - name: Clean previous build (Optional)
+        run: dotnet clean
+
       - name: Build
         run: dotnet build --no-restore
 
-      - name: Test
-        run: dotnet test --no-build --verbosity normal
+      - name: Run tests with code coverage
+        run: dotnet test --no-build --collect:"XPlat Code Coverage" --results-directory ./TestResults
+          
+      # Install xmllint to parse the Cobertura XML file
+      - name: Install xmllint
+        run: sudo apt-get install -y libxml2-utils
+
+      - name: Upload code coverage report for GitHub
+        uses: actions/upload-artifact@v3
+        with:
+          name: code-coverage-report
+          path: ./TestResults/*/coverage.cobertura.xml
+
+      - name: Check code coverage percentage
+        run: |
+          # Parse the Cobertura coverage file to extract the coverage percentage
+          COVERAGE=$(xmllint --xpath "string(//coverage/@line-rate)" ./TestResults/*/coverage.cobertura.xml)
+          echo "Code coverage: $COVERAGE"
+          
+          # Compare with threshold (e.g., 80%)
+          THRESHOLD=0.80
+          if (( $(echo "$COVERAGE < $THRESHOLD" | bc -l) )); then
+            echo "Code coverage is below $THRESHOLD, failing the build."
+            exit 1
+          else
+            echo "Code coverage is above the threshold: $THRESHOLD."
+          fi
+        shell: bash
