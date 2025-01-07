@@ -43,6 +43,10 @@ jobs:
 
       - name: Run tests with code coverage
         run: dotnet test --no-build --collect:"XPlat Code Coverage" --results-directory ./TestResults
+          
+      # Install xmllint to parse the Cobertura XML file
+      - name: Install xmllint
+        run: sudo apt-get install -y libxml2-utils
 
       - name: Upload code coverage report for GitHub
         uses: actions/upload-artifact@v3
