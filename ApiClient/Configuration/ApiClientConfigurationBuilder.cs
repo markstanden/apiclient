@@ -3,7 +3,7 @@ namespace ApiClient.Configuration;
 public class ApiClientConfigurationBuilder
 {
     private string _baseUrl;
-    
+
     /// <summary>
     /// Builds the configuration
     /// </summary>
@@ -11,11 +11,9 @@ public class ApiClientConfigurationBuilder
     /// <exception cref="InvalidOperationException">Throws if Base URL is not set</exception>
     public ApiClientConfiguration Build()
     {
-        if (string.IsNullOrEmpty(_baseUrl)) throw new InvalidOperationException("Base url not set");
-        return new ApiClientConfiguration
-        {
-            BaseUrl = _baseUrl
-        };
+        if (string.IsNullOrEmpty(_baseUrl))
+            throw new InvalidOperationException("Base url not set");
+        return new ApiClientConfiguration { BaseUrl = _baseUrl };
     }
 
     /// <summary>
@@ -32,5 +30,10 @@ public class ApiClientConfigurationBuilder
 
         _baseUrl = baseUrl;
         return this;
+    }
+
+    public ApiClientConfigurationBuilder WithBearerToken(string token)
+    {
+        return null;
     }
 }
