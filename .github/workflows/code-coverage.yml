@@ -1,6 +1,6 @@
 name: Code Coverage
 
-# Validates unit tests pass, and test coverage meets required standards
+# Validates test coverage meets required standards
 on:
   workflow_call:
   workflow_dispatch:
@@ -20,6 +20,25 @@ jobs:
         uses: actions/setup-dotnet@v4
         with:
           dotnet-version: '8.0.x'
+
+      # Cache NuGet packages for faster builds
+      - name: Cache NuGet packages
+        id: cache-nuget
+        uses: actions/cache@v4
+        with:
+          path: ~/.nuget/packages
+          key: ${{ runner.os }}-nuget-${{ hashFiles('**/*.csproj', '**/*.sln') }}
+          restore-keys: |
+            ${{ runner.os }}-nuget-
+
+      # Log cache status
+      - name: Check cache status
+        run: |
+          if [ "${{ steps.cache-nuget.outputs.cache-hit }}" == 'true' ]; then
+            echo "🎯 Using cached NuGet packages"
+          else
+            echo "💨 Cache miss - downloading packages"
+          fi
 
       # Restore NuGet packages and dependencies for the project.
       # Ensures all the necessary packages are available for building the app.
