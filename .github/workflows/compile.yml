@@ -19,7 +19,9 @@ jobs:
         with:
           dotnet-version: '8.0.x'
 
+      # Cache NuGet packages for faster builds
       - name: Cache NuGet packages
+        id: cache-nuget
         uses: actions/cache@v4
         with:
           path: ~/.nuget/packages
@@ -27,9 +29,20 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-nuget-
 
+      # Log cache status
+      - name: Check cache status
+        run: |
+          if [ "${{ steps.cache-nuget.outputs.cache-hit }}" == 'true' ]; then
+            echo "🎯 Using cached NuGet packages"
+          else
+            echo "💨 Cache miss - downloading packages"
+          fi
+
+      # Run restore as a separate step
       - name: Restore dependencies
         run: dotnet restore
 
+      # Build will restore by default, but it already been done.
       - name: Build
         run: dotnet build --no-restore
 
