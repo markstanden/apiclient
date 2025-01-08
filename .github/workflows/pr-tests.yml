@@ -19,18 +19,18 @@ jobs:
     steps:
       # Checkout the code from the repo so we can work with it.
       - name: Checkout code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       # Set up .NET 8.0 on the runner so we can build and test .NET apps.
       - name: Setup .NET
-        uses: actions/setup-dotnet@v3
+        uses: actions/setup-dotnet@v4
         with:
           dotnet-version: '8.0.x'
 
       # Cache the NuGet packages so we don't have to download them every time.
       # Helps speed up the build process if dependencies haven't changed between builds.
       - name: Cache NuGet packages
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           # Path where NuGet packages are stored
           path: ~/.nuget/packages
