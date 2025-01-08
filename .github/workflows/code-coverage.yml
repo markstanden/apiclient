@@ -29,7 +29,7 @@ jobs:
       # Run the unit tests with code coverage collection, but without rebuilding the project.
       # Results are output to the `TestResults` directory.
       - name: Run tests with coverage
-        run: dotnet test --collect:"XPlat Code Coverage" --results-directory ./TestResults
+        run: dotnet test --no-restore --collect:"XPlat Code Coverage" --results-directory ./TestResults
 
       # Install `xmllint`, a utility to parse XML files,
       # specifically for the Cobertura coverage report.
