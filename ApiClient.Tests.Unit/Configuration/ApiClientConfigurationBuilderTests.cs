@@ -24,9 +24,12 @@ public class ApiClientConfigurationBuilderTests
         Assert.IsType<InvalidOperationException>(exception);
     }
     
-    [Fact(Skip = "Waiting for other build options first")]
+    [Fact]
     public void Build_WithoutSettingBaseUrl_ThrowsInvalidOperationException()
     {
+        var token = Guid.NewGuid().ToString();
+        _sut.WithBearerAuth(token);
+        
         var exception = Record.Exception(() => _sut.Build());
 
         Assert.NotNull(exception);
@@ -38,7 +41,7 @@ public class ApiClientConfigurationBuilderTests
     {
         _sut.WithBaseUrl(BASE_URL);
         
-        var result = _sut.Build();
+        ApiClientConfiguration result = _sut.Build();
         
         Assert.NotNull(result);
         Assert.IsType<ApiClientConfiguration>(result);
@@ -49,7 +52,7 @@ public class ApiClientConfigurationBuilderTests
     {
         _sut.WithBaseUrl(BASE_URL);
         
-        var result = _sut.Build();
+        ApiClientConfiguration result = _sut.Build();
      
         Assert.Equal(BASE_URL, result.BaseUrl);
     }
@@ -80,12 +83,33 @@ public class ApiClientConfigurationBuilderTests
     [Fact]
     public void WithBaseUrl_ChainedWithBuildMethod_ReturnsConfigurationWithBaseUrlSet()
     {
-        _sut.WithBaseUrl(BASE_URL);
-
-        var result = _sut.WithBaseUrl(BASE_URL).Build();
+        ApiClientConfiguration result = _sut.WithBaseUrl(BASE_URL).Build();
         
         Assert.Equal(BASE_URL, result.BaseUrl); 
     }
 
+    [Fact]
+    public void WithBearerAuth_ChainedWithBuildMethod_ReturnsConfigurationWithBearerAuthSet()
+    {
+        var token = Guid.NewGuid().ToString();
+        _sut.WithBaseUrl(BASE_URL);
 
+        ApiClientConfiguration result = _sut.WithBearerAuth(token).Build();
+       
+        Assert.NotNull(result.BearerAuth);
+        Assert.Contains(token, result.BearerAuth.Token);  
+    }
+    
+    [Fact]
+    public void WithBearerAuth_NotChainedWithBuildMethod_ReturnsConfigurationWithBearerAuthSet()
+    {
+        var token = Guid.NewGuid().ToString();
+        _sut.WithBaseUrl(BASE_URL);
+        _sut.WithBearerAuth(token);
+
+        ApiClientConfiguration result = _sut.Build();
+        
+        Assert.NotNull(result.BearerAuth);
+        Assert.Contains(token, result.BearerAuth.Token);  
+    }
 }
