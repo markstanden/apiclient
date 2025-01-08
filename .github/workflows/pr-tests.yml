@@ -2,66 +2,88 @@ name: PR Build and Test
 
 on:
   pull_request:
-    branches: [ main ]
+    # Trigger when a PR is opened or updated on the 'main' branch
+    branches: [ main ]  
     types: [opened, synchronize, reopened]
 
 jobs:
   build-and-test:
+    # Use the latest Ubuntu runner for the job
     runs-on: ubuntu-latest
     
     steps:
+      # Checkout the code from the repo so we can work with it.
       - name: Checkout code
         uses: actions/checkout@v3
 
+      # Set up .NET 8.0 on the runner so we can build and test .NET apps.
       - name: Setup .NET
         uses: actions/setup-dotnet@v3
         with:
           dotnet-version: '8.0.x'
 
+      # Cache the NuGet packages so we don't have to download them every time.
+      # Helps speed up the build process if dependencies haven't changed between builds.
       - name: Cache NuGet packages
         uses: actions/cache@v3
         with:
+          # Path where NuGet packages are stored
           path: ~/.nuget/packages
-          key: ${{ runner.os }}-nuget-${{ hashFiles('**/*.csproj') }}
+          # Create a cache key based on .csproj and .sln file contents
+          # Busts cache if solution or project files change.
+          key: ${{ runner.os }}-nuget-${{ hashFiles('**/*.csproj', '**/*.sln') }}  
           restore-keys: |
-            ${{ runner.os }}-nuget-
+            ${{ runner.os }}-nuget-  # This helps restore the cache if there's a partial match
 
+      # Install the CSharpier tool globally,
+      # used for checking code formatting.
       - name: Install CSharpier
         run: dotnet tool install -g csharpier
 
+      # Run CSharpier to check if the code is properly formatted. 
+      # If not, it'll fail the build.
       - name: Check formatting
         run: dotnet csharpier --check .
 
+      # Restore NuGet packages and dependencies for the project.
+      # Ensures all the necessary packages are available for building the app.
       - name: Restore dependencies
         run: dotnet restore
 
-      - name: Clean previous build (Optional)
-        run: dotnet clean
-
+      # Build the project without restoring packages (since we've already done that earlier).
       - name: Build
         run: dotnet build --no-restore
 
+      # Run the unit tests with code coverage collection, but without rebuilding the project.
+      # Results are output to the `TestResults` directory.
       - name: Run tests with code coverage
         run: dotnet test --no-build --collect:"XPlat Code Coverage" --results-directory ./TestResults
-          
-      # Install xmllint to parse the Cobertura XML file
+
+      # Install `xmllint`, a utility to parse XML files,
+      # specifically for the Cobertura coverage report.
       - name: Install xmllint
         run: sudo apt-get install -y libxml2-utils
 
+      # Upload the code coverage report as an artifact so it can be viewed in GitHub Actions later.
+      # Useful for monitoring coverage trends over time.
       - name: Upload code coverage report for GitHub
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
+          # Name of the artifact to upload
           name: code-coverage-report
-          path: ./TestResults/*/coverage.cobertura.xml
+          # Path to the Cobertura XML file containing the coverage report
+          path: ./TestResults/*/coverage.cobertura.xml  
 
+      # Parse the coverage report (in Cobertura format) to extract the code coverage percentage.
+      # If the coverage is below the specified threshold the build will fail.
       - name: Check code coverage percentage
         run: |
-          # Parse the Cobertura coverage file to extract the coverage percentage
           COVERAGE=$(xmllint --xpath "string(//coverage/@line-rate)" ./TestResults/*/coverage.cobertura.xml)
           echo "Code coverage: $COVERAGE"
-          
-          # Compare with threshold (e.g., 80%)
           THRESHOLD=0.80
+          
+          # Pipe the condition into bc (a command line calculator)
+          # the -l flag uses floating point arithmetic.
           if (( $(echo "$COVERAGE < $THRESHOLD" | bc -l) )); then
             echo "Code coverage is below $THRESHOLD, failing the build."
             exit 1
