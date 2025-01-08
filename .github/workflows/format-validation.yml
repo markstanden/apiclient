@@ -10,6 +10,7 @@ on:
         required: false
         type: string
         default: '.'
+  workflow_dispatch:  # Allows manual runs from GitHub UI
 
 jobs:
   format-validation:
