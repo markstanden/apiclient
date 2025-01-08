@@ -1,8 +1,11 @@
+using ApiClient.Configuration.Auth;
+
 namespace ApiClient.Configuration;
 
 public class ApiClientConfigurationBuilder
 {
     private string _baseUrl;
+    private BearerAuthConfiguration? _bearerAuthConfiguration;
 
     /// <summary>
     /// Builds the configuration
@@ -13,7 +16,11 @@ public class ApiClientConfigurationBuilder
     {
         if (string.IsNullOrEmpty(_baseUrl))
             throw new InvalidOperationException("Base url not set");
-        return new ApiClientConfiguration { BaseUrl = _baseUrl };
+        return new ApiClientConfiguration
+        {
+            BaseUrl = _baseUrl,
+            BearerToken = _bearerAuthConfiguration,
+        };
     }
 
     /// <summary>
@@ -34,6 +41,7 @@ public class ApiClientConfigurationBuilder
 
     public ApiClientConfigurationBuilder WithBearerToken(string token)
     {
-        return null;
+        _bearerAuthConfiguration = new BearerAuthConfiguration { Token = token };
+        return this;
     }
 }
