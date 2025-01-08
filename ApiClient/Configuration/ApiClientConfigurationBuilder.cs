@@ -36,6 +36,7 @@ public class ApiClientConfigurationBuilder
         }
 
         _baseUrl = baseUrl;
+
         return this;
     }
 
