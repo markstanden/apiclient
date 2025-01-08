@@ -1,4 +1,4 @@
-name: PR Build and Test
+name: Validate Changes
 
 # Triggered when PRs to main branch are opened or updated
 on:
