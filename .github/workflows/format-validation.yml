@@ -43,6 +43,7 @@ jobs:
         run: dotnet tool install -g csharpier
         if: steps.cache-dotnet-tools.outputs.cache-hit != 'true'
 
-      # Runs CSharpier in validation mode - will fail if any files aren't formatted properly
+      # Runs CSharpier in validation mode
+      # will fail if any files aren't formatted as it expects
       - name: Validate formatting
         run: dotnet csharpier --check ${{ inputs.working-directory }}
