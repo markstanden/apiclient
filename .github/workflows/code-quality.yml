@@ -1,4 +1,4 @@
-name: Format Validation
+name: Code Quality
 
 # A reusable workflow that other workflows in this repo can call
 # Makes the formatting checks consistent across all workflows

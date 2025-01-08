@@ -10,7 +10,7 @@ on:
 jobs:
   # Run the formatting validation first - no point building if formatting is wrong
   validate-format:
-    uses: ./.github/workflows/format-validation.yml
+    uses: ./.github/workflows/code-quality.yml
 
   # Main build and test job - only runs if formatting passes
   build-and-test:
