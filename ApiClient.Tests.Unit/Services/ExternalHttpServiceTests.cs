@@ -40,6 +40,7 @@ public class ExternalHttpServiceTests
     [Theory]
     [InlineData(HttpStatusCode.Unauthorized)]
     [InlineData(HttpStatusCode.InternalServerError)]
+    [InlineData(HttpStatusCode.RequestTimeout)]
     public async Task GetAsync_WithAnUnsuccessfulResponse_ThrowsHttpRequestException(
         HttpStatusCode statusCode
     )
