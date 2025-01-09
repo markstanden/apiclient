@@ -40,9 +40,14 @@ public class ApiClientConfigurationBuilder
         return this;
     }
 
-    public ApiClientConfigurationBuilder WithBearerToken(string token)
+    /// <summary>
+    /// Adds a bearer token to the ApiClientConfiguration
+    /// </summary>
+    /// <param name="secret">The bearer token secret</param>
+    /// <returns>The current builder instance with baseUrl set</returns>
+    public ApiClientConfigurationBuilder WithBearerToken(string secret)
     {
-        _bearerAuthConfiguration = new BearerAuthConfiguration { Token = token };
+        _bearerAuthConfiguration = new BearerAuthConfiguration { Secret = secret };
         return this;
     }
 }

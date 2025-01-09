@@ -8,7 +8,7 @@ public class ApiClientConfigurationBuilderTests
 {
     private const string BASE_URL = "https://valid.test.url";
 
-    private ApiClientConfigurationBuilder _sut;
+    private readonly ApiClientConfigurationBuilder _sut;
 
     public ApiClientConfigurationBuilderTests()
     {
@@ -91,25 +91,25 @@ public class ApiClientConfigurationBuilderTests
     [Fact]
     public void WithBearerToken_ChainedWithBuildMethod_ReturnsConfigurationWithBearerAuthSet()
     {
-        var token = Guid.NewGuid().ToString();
+        var secret = Guid.NewGuid().ToString();
         _sut.WithBaseUrl(BASE_URL);
 
-        ApiClientConfiguration result = _sut.WithBearerToken(token).Build();
+        ApiClientConfiguration result = _sut.WithBearerToken(secret).Build();
 
         Assert.NotNull(result.BearerToken);
-        Assert.Contains(token, result.BearerToken.Token);
+        Assert.Contains(secret, result.BearerToken.Secret);
     }
 
     [Fact]
     public void WithBearerToken_NotChainedWithBuildMethod_ReturnsConfigurationWithBearerAuthSet()
     {
-        var token = Guid.NewGuid().ToString();
+        var secret = Guid.NewGuid().ToString();
         _sut.WithBaseUrl(BASE_URL);
-        _sut.WithBearerToken(token);
+        _sut.WithBearerToken(secret);
 
         ApiClientConfiguration result = _sut.Build();
 
         Assert.NotNull(result.BearerToken);
-        Assert.Contains(token, result.BearerToken.Token);
+        Assert.Contains(secret, result.BearerToken.Secret);
     }
 }
