@@ -41,15 +41,19 @@ The pre-commit hook will automatically format C# files using CSharpier before ea
 - Configuration can be found in `.csharpierrc`
 
 ## CI/CD Pipeline
+The project uses GitHub Actions workflows to enforce code quality:
 
-The project includes a GitHub Actions workflow that:
-- Builds the solution
-- Runs all unit tests
-- Verifies code coverage meets minimum threshold (80%)
-- Checks code formatting consistency
-- Runs on all PRs to main branch
+### Workflow Structure
+- **Code Quality**: Validates code formatting using CSharpier
+- **Compilation**: Ensures the solution builds successfully
+- **Code Coverage**: Runs tests and verifies 80% minimum test coverage
 
-Failed checks will block PR merging to ensure code quality standards are maintained.
+### Key Features
+- Optimized with caching for faster builds
+- Automated checks on PRs to main branch
+- Workflows work independently
+- Manual triggers for development testing
+- Failed checks block PR merging
 
 ## Project Structure & Patterns
 
