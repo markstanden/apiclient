@@ -42,6 +42,8 @@ public class ApiClientConfigurationBuilder
 
     /// <summary>
     /// Adds a bearer token to the ApiClientConfiguration
+    /// Bearer tokens can be used to authenticate with a shared secret or
+    /// JWT, and is applied within the request header.
     /// </summary>
     /// <param name="secret">The bearer token secret</param>
     /// <returns>The current builder instance with baseUrl set</returns>

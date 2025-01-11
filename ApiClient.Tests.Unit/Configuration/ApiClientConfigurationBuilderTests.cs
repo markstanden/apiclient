@@ -89,7 +89,7 @@ public class ApiClientConfigurationBuilderTests
     }
 
     [Fact]
-    public void WithBearerToken_ChainedWithBuildMethod_ReturnsConfigurationWithBearerAuthSet()
+    public void WithBearerToken_ChainedWithBuildMethod_ReturnsConfigurationWithBearerTokenSet()
     {
         var secret = Guid.NewGuid().ToString();
         _sut.WithBaseUrl(BASE_URL);
@@ -101,7 +101,7 @@ public class ApiClientConfigurationBuilderTests
     }
 
     [Fact]
-    public void WithBearerToken_NotChainedWithBuildMethod_ReturnsConfigurationWithBearerAuthSet()
+    public void WithBearerToken_NotChainedWithBuildMethod_ReturnsConfigurationWithBearerTokenSet()
     {
         var secret = Guid.NewGuid().ToString();
         _sut.WithBaseUrl(BASE_URL);
@@ -117,9 +117,48 @@ public class ApiClientConfigurationBuilderTests
     [InlineData(null)]
     [InlineData("")]
     [InlineData("  ")]
-    public void WithBearerToken_WithInvalidSecret_ReturnsConfigurationWithBearerAuthSet(
+    public void WithBearerToken_WithInvalidSecret_ReturnsConfigurationWithBearerTokenSet(
         string secret
     )
+    {
+        _sut.WithBaseUrl(BASE_URL);
+
+        Exception? result = Record.Exception(() => _sut.WithBearerToken(secret));
+
+        Assert.NotNull(result);
+        Assert.IsType<ArgumentException>(result);
+    }
+
+    [Fact]
+    public void WithApiKey_ChainedWithBuildMethod_ReturnsConfigurationWithApiKeySet()
+    {
+        var secret = Guid.NewGuid().ToString();
+        _sut.WithBaseUrl(BASE_URL);
+
+        ApiClientConfiguration result = _sut.WithApiKey(secret).Build();
+
+        Assert.NotNull(result.BearerToken);
+        Assert.Contains(secret, result.BearerToken.Secret);
+    }
+
+    [Fact]
+    public void WithApiKey_NotChainedWithBuildMethod_ReturnsConfigurationWithApiKeySet()
+    {
+        var secret = Guid.NewGuid().ToString();
+        _sut.WithBaseUrl(BASE_URL);
+        _sut.WithBearerToken(secret);
+
+        ApiClientConfiguration result = _sut.Build();
+
+        Assert.NotNull(result.BearerToken);
+        Assert.Contains(secret, result.BearerToken.Secret);
+    }
+
+    [Theory]
+    [InlineData(null)]
+    [InlineData("")]
+    [InlineData("  ")]
+    public void WithApiKey_WithInvalidSecret_ReturnsConfigurationWithApiKeySet(string secret)
     {
         _sut.WithBaseUrl(BASE_URL);
 
