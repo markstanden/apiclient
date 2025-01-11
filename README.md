@@ -62,7 +62,7 @@ The project implements the Builder pattern for configuration, allowing flexible 
 ```csharp
 var config = new ApiClientConfigurationBuilder()
     .WithBaseUrl("https://api.example.com")
-    .WithBearerToken("token")
+    .WithBearerToken("secret")
     .Build();
 ```
 
