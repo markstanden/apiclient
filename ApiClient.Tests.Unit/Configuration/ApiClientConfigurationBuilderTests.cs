@@ -112,4 +112,20 @@ public class ApiClientConfigurationBuilderTests
         Assert.NotNull(result.BearerToken);
         Assert.Contains(secret, result.BearerToken.Secret);
     }
+
+    [Theory]
+    [InlineData(null)]
+    [InlineData("")]
+    [InlineData("  ")]
+    public void WithBearerToken_WithInvalidSecret_ReturnsConfigurationWithBearerAuthSet(
+        string secret
+    )
+    {
+        _sut.WithBaseUrl(BASE_URL);
+
+        Exception? result = Record.Exception(() => _sut.WithBearerToken(secret));
+
+        Assert.NotNull(result);
+        Assert.IsType<ArgumentException>(result);
+    }
 }

@@ -32,7 +32,7 @@ public class ApiClientConfigurationBuilder
     {
         if (string.IsNullOrWhiteSpace(baseUrl))
         {
-            throw new ArgumentException();
+            throw new ArgumentException("Provided baseUrl is empty or null.");
         }
 
         _baseUrl = baseUrl;
@@ -47,6 +47,11 @@ public class ApiClientConfigurationBuilder
     /// <returns>The current builder instance with baseUrl set</returns>
     public ApiClientConfigurationBuilder WithBearerToken(string secret)
     {
+        if (string.IsNullOrWhiteSpace(secret))
+        {
+            throw new ArgumentException("Provided secret is empty or null.");
+        }
+
         _bearerAuthConfiguration = new BearerAuthConfiguration { Secret = secret };
         return this;
     }
