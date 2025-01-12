@@ -128,7 +128,7 @@ public class ApiClientConfigurationBuilderTests
     }
 
     [Fact]
-    public void WithApiKey_ChainedWithBuildMethod_ReturnsConfigurationWithApiKeySet()
+    public void WithApiKey_ChainedWithBuildMethod_ReturnsConfigurationWithApiKeyAndSecretSet()
     {
         var key = Guid.NewGuid().ToString();
         var secret = Guid.NewGuid().ToString();
@@ -137,12 +137,12 @@ public class ApiClientConfigurationBuilderTests
         ApiClientConfiguration result = _sut.WithApiKey(key, secret).Build();
 
         Assert.NotNull(result.ApiKey);
-        Assert.Contains(secret, result.ApiKey.Key);
+        Assert.Contains(key, result.ApiKey.Key);
         Assert.Contains(secret, result.ApiKey.Secret);
     }
 
     [Fact]
-    public void WithApiKey_NotChainedWithBuildMethod_ReturnsConfigurationWithApiKeySet()
+    public void WithApiKey_NotChainedWithBuildMethod_ReturnsConfigurationWithApiKeyAndSecretSet()
     {
         var key = Guid.NewGuid().ToString();
         var secret = Guid.NewGuid().ToString();
@@ -152,19 +152,45 @@ public class ApiClientConfigurationBuilderTests
         ApiClientConfiguration result = _sut.Build();
 
         Assert.NotNull(result.ApiKey);
-        Assert.Contains(secret, result.ApiKey.Key);
+        Assert.Contains(key, result.ApiKey.Key);
         Assert.Contains(secret, result.ApiKey.Secret);
     }
 
+    [Fact]
+    public void WithApiKey_WithJustSecret_ReturnsApiConfigurationWithDefaultKey()
+    {
+        var secret = Guid.NewGuid().ToString();
+        _sut.WithBaseUrl(BASE_URL);
+
+        ApiClientConfiguration result = _sut.WithApiKey(secret).Build();
+
+        Assert.NotNull(result.ApiKey);
+        Assert.Equal("X-API-KEY", result.ApiKey.Key);
+        Assert.Equal(secret, result.ApiKey.Secret);
+    }
+
     [Theory]
-    [InlineData(null, null)]
-    [InlineData("", null)]
-    [InlineData("  ", null)]
-    public void WithApiKey_WithInvalidKey_ThrowsArgumentException(string secret)
+    [InlineData(null, "validSecret")]
+    [InlineData("", "validSecret")]
+    [InlineData("  ", "validSecret")]
+    public void WithApiKey_WithInvalidKey_ThrowsArgumentException(string key, string secret)
     {
         _sut.WithBaseUrl(BASE_URL);
 
-        Exception? result = Record.Exception(() => _sut.WithBearerToken(secret));
+        Exception? result = Record.Exception(() => _sut.WithApiKey(key, secret));
+
+        Assert.NotNull(result);
+        Assert.IsType<ArgumentException>(result);
+    }
+
+    [Theory]
+    [InlineData("validKey", "")]
+    [InlineData("validKey", "  ")]
+    public void WithApiKey_WithInvalidSecret_ThrowsArgumentException(string key, string secret)
+    {
+        _sut.WithBaseUrl(BASE_URL);
+
+        Exception? result = Record.Exception(() => _sut.WithApiKey(key, secret));
 
         Assert.NotNull(result);
         Assert.IsType<ArgumentException>(result);
