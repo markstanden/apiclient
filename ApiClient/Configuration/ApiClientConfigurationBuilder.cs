@@ -7,6 +7,7 @@ public class ApiClientConfigurationBuilder
     private string _baseUrl;
     private BearerAuthConfiguration? _bearerAuthConfiguration;
     private ApiKeyAuthConfiguration? _apiKeyAuthConfiguration;
+    private string _contentType;
 
     /// <summary>
     /// Builds the configuration
@@ -25,6 +26,7 @@ public class ApiClientConfigurationBuilder
             BaseUrl = _baseUrl,
             BearerToken = _bearerAuthConfiguration,
             ApiKey = _apiKeyAuthConfiguration,
+            ContentType = _contentType,
         };
     }
 
@@ -85,6 +87,9 @@ public class ApiClientConfigurationBuilder
     public ApiClientConfigurationBuilder WithContentType(string contentType)
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(contentType, nameof(contentType));
+
+        _contentType = contentType;
+
         return this;
     }
 }
