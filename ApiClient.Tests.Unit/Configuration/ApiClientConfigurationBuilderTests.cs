@@ -63,10 +63,9 @@ public class ApiClientConfigurationBuilderTests
     [InlineData(" ")]
     public void WithBaseUrl_WhenUrlIsInvalid_ThrowsArgumentException(string invalidUrl)
     {
-        var exception = Record.Exception(() => _sut.WithBaseUrl(invalidUrl));
+        var shouldThrow = () => _sut.WithBaseUrl(invalidUrl);
 
-        Assert.NotNull(exception);
-        Assert.IsType<ArgumentException>(exception);
+        AssertThrowsArgumentException(() => shouldThrow());
     }
 
     [Fact]
@@ -119,12 +118,11 @@ public class ApiClientConfigurationBuilderTests
     [InlineData("  ")]
     public void WithBearerToken_WithInvalidSecret_ThrowsArgumentException(string secret)
     {
-        _sut.WithBaseUrl(BASE_URL);
+        var sut = GetSutWithBaseUrlSet();
 
-        Exception? result = Record.Exception(() => _sut.WithBearerToken(secret));
+        var shouldThrow = () => sut.WithBearerToken(secret);
 
-        Assert.NotNull(result);
-        Assert.IsType<ArgumentException>(result);
+        AssertThrowsArgumentException(() => shouldThrow());
     }
 
     [Fact]
@@ -173,26 +171,26 @@ public class ApiClientConfigurationBuilderTests
     [InlineData(null, "validSecret")]
     [InlineData("", "validSecret")]
     [InlineData("  ", "validSecret")]
-    public void WithApiKey_WithInvalidKey_ThrowsArgumentException(string key, string secret)
-    {
-        _sut.WithBaseUrl(BASE_URL);
-
-        Exception? result = Record.Exception(() => _sut.WithApiKey(key, secret));
-
-        Assert.NotNull(result);
-        Assert.IsType<ArgumentException>(result);
-    }
-
-    [Theory]
     [InlineData("validKey", "")]
     [InlineData("validKey", "  ")]
-    public void WithApiKey_WithInvalidSecret_ThrowsArgumentException(string key, string secret)
+    public void WithApiKey_WithInvalidCredentials_ThrowsArgumentException(string key, string secret)
     {
-        _sut.WithBaseUrl(BASE_URL);
+        var sut = GetSutWithBaseUrlSet();
 
-        Exception? result = Record.Exception(() => _sut.WithApiKey(key, secret));
+        var shouldThrow = () => sut.WithApiKey(key, secret);
 
-        Assert.NotNull(result);
-        Assert.IsType<ArgumentException>(result);
+        AssertThrowsArgumentException(() => shouldThrow());
+    }
+
+    public ApiClientConfigurationBuilder GetSutWithBaseUrlSet(string baseUrl = BASE_URL)
+    {
+        return _sut.WithBaseUrl(baseUrl);
+    }
+
+    public void AssertThrowsArgumentException(Action methodUnderTest)
+    {
+        var exception = Record.Exception(methodUnderTest);
+        Assert.NotNull(exception);
+        Assert.IsType<ArgumentException>(exception);
     }
 }
