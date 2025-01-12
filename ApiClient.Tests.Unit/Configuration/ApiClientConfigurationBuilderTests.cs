@@ -274,6 +274,6 @@ public class ApiClientConfigurationBuilderTests
     {
         var exception = Record.Exception(methodUnderTest);
         Assert.NotNull(exception);
-        Assert.IsType<ArgumentException>(exception);
+        Assert.IsAssignableFrom<ArgumentException>(exception);
     }
 }

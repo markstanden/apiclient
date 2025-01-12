@@ -16,7 +16,10 @@ public class ApiClientConfigurationBuilder
     public ApiClientConfiguration Build()
     {
         if (string.IsNullOrEmpty(_baseUrl))
+        {
             throw new InvalidOperationException("Base url not set");
+        }
+
         return new ApiClientConfiguration
         {
             BaseUrl = _baseUrl,
@@ -32,10 +35,7 @@ public class ApiClientConfigurationBuilder
     /// <returns>The current builder instance with baseUrl set</returns>
     public ApiClientConfigurationBuilder WithBaseUrl(string baseUrl)
     {
-        if (string.IsNullOrWhiteSpace(baseUrl))
-        {
-            throw new ArgumentException("Provided baseUrl is empty or null.");
-        }
+        ArgumentException.ThrowIfNullOrWhiteSpace(baseUrl, nameof(baseUrl));
 
         _baseUrl = baseUrl;
 
@@ -51,10 +51,7 @@ public class ApiClientConfigurationBuilder
     /// <returns>The current builder instance with the bearer token set</returns>
     public ApiClientConfigurationBuilder WithBearerToken(string secret)
     {
-        if (string.IsNullOrWhiteSpace(secret))
-        {
-            throw new ArgumentException("Provided secret is empty or null.");
-        }
+        ArgumentException.ThrowIfNullOrWhiteSpace(secret, nameof(secret));
 
         _bearerAuthConfiguration = new BearerAuthConfiguration { Secret = secret };
         return this;
@@ -70,15 +67,8 @@ public class ApiClientConfigurationBuilder
     /// <returns>The current builder instance with the API Key set</returns>
     public ApiClientConfigurationBuilder WithApiKey(string key, string secret)
     {
-        if (string.IsNullOrWhiteSpace(key))
-        {
-            throw new ArgumentException("Provided key is empty or null.");
-        }
-
-        if (string.IsNullOrWhiteSpace(secret))
-        {
-            throw new ArgumentException("Provided secret is empty or null.");
-        }
+        ArgumentException.ThrowIfNullOrWhiteSpace(key, nameof(key));
+        ArgumentException.ThrowIfNullOrWhiteSpace(secret, nameof(secret));
 
         _apiKeyAuthConfiguration = new ApiKeyAuthConfiguration { Key = key, Secret = secret };
 
@@ -87,16 +77,14 @@ public class ApiClientConfigurationBuilder
 
     public ApiClientConfigurationBuilder WithApiKey(string secret)
     {
-        if (string.IsNullOrWhiteSpace(secret))
-        {
-            throw new ArgumentException("Provided secret is empty or null.");
-        }
+        ArgumentException.ThrowIfNullOrWhiteSpace(secret, nameof(secret));
 
         return WithApiKey("X-API-KEY", secret);
     }
 
     public ApiClientConfigurationBuilder WithContentType(string contentType)
     {
-        return null;
+        ArgumentException.ThrowIfNullOrWhiteSpace(contentType, nameof(contentType));
+        return this;
     }
 }
