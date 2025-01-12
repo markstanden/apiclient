@@ -94,4 +94,9 @@ public class ApiClientConfigurationBuilder
 
         return WithApiKey("X-API-KEY", secret);
     }
+
+    public ApiClientConfigurationBuilder WithContentType(string contentType)
+    {
+        return null;
+    }
 }

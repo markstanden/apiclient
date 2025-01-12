@@ -7,4 +7,5 @@ public record ApiClientConfiguration
     public required string BaseUrl { get; init; }
     public BearerAuthConfiguration? BearerToken { get; init; }
     public ApiKeyAuthConfiguration? ApiKey { get; init; }
+    public string? ContentType { get; init; }
 }
