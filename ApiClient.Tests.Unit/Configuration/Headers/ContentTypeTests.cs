@@ -40,11 +40,15 @@ public class ContentTypeTests
         Assert.Equal(expectedMimeType, result.Value);
     }
 
-    [Fact]
-    public void ContentType_UsingConstructorCustomMimeType_ReturnsCustomMimeType()
+    [Theory]
+    [InlineData("custom/mime-type")]
+    [InlineData("custom/mime-type; charset=UTF-8")]
+    [InlineData("custom/mime-type+json")]
+    [InlineData("custom/x-mime-type")]
+    public void ContentType_UsingConstructorCustomMimeTypeWithValidInput_ReturnsCustomMimeType(
+        string customMimeType
+    )
     {
-        var customMimeType = "custom/mime-type";
-
         var result = new ContentType(customMimeType);
 
         Assert.Equal(customMimeType, result.Value);
