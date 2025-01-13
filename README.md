@@ -15,7 +15,7 @@ A simple API client designed to practice building a console application in C#.
     - [x] Consistent formatting
 
 ### Secondary Goals
-- Get the hang of C# naming conventions
+- Practice C# naming conventions
 - Learn to write clean tests using NSubstitute
 - Master proper argument validation patterns in C#
 
@@ -23,7 +23,7 @@ A simple API client designed to practice building a console application in C#.
 
 ### Prerequisites
 - .NET 8.0
-- CSharpier (Global Tool): `dotnet tool install -g csharpier`
+- CSharpier (Global): `dotnet tool install -g csharpier`
 
 ### Git Hooks
 This project uses Git hooks for automated code formatting. To set up:
@@ -76,8 +76,8 @@ var config = new ApiClientConfigurationBuilder()
 ```
 
 #### Static Factory Pattern
-Type-safe configuration options are provided using a variant of the Static Factory pattern.
-This provides IDE autocompletion and type safety while maintaining flexibility:
+Type-safe configuration options are provided using a variant of the *Static Factory* pattern.
+This provides IDE autocompletion and type safety whilst a public constructor maintains flexibility:
 
 ```csharp
 // Using predefined types
@@ -98,5 +98,5 @@ This approach:
 - Using xUnit as the test framework
 - NSubstitute for mocking, particularly useful for HTTP client testing
 - Tests follow Arrange-Act-Assert pattern
-- Helpers to reduce code repitition
-- Assert single behaviours (not implementation) for each test.
+- Helpers to reduce code repetition
+- Asserts single behaviours (not implementation) for each test.
