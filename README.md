@@ -60,7 +60,25 @@ The project uses GitHub Actions workflows to enforce code quality:
 ### Project Organization
 
 - Core API client functionality in `ApiClient` project
-- Unit tests in `ApiClient.Tests.Unit`
+- Unit tests in `ApiClient.Tests.Unit`, mirroring structure in Core project.
+
+```bash
+tree -I "bin|obj|*.cs*|*.sln*" --dirsfirst
+```
+
+```
+.
+├── ApiClient
+│   ├── Configuration
+│   │   ├── Auth
+│   │   └── Headers
+│   └── Services
+├── ApiClient.Tests.Unit
+│   ├── Configuration
+│   │   └── Headers
+│   └── Services
+└── README.md
+```
 
 ### Design Patterns
 
