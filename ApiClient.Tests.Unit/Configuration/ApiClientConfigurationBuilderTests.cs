@@ -1,4 +1,5 @@
 using ApiClient.Configuration;
+using ApiClient.Configuration.Headers;
 using JetBrains.Annotations;
 
 namespace ApiClient.Tests.Unit.Configuration;
@@ -14,6 +15,10 @@ public class ApiClientConfigurationBuilderTests
     {
         _sut = new ApiClientConfigurationBuilder();
     }
+
+    /*
+     * Build method tests.
+     */
 
     [Fact]
     public void Build_WithoutConfiguration_ThrowsInvalidOperationException()
@@ -57,16 +62,19 @@ public class ApiClientConfigurationBuilderTests
         Assert.Equal(BASE_URL, result.BaseUrl);
     }
 
+    /*
+     * WithBaseUrl config builder method tests.
+     */
+
     [Theory]
     [InlineData(null)]
     [InlineData("")]
     [InlineData(" ")]
     public void WithBaseUrl_WhenUrlIsInvalid_ThrowsArgumentException(string invalidUrl)
     {
-        var exception = Record.Exception(() => _sut.WithBaseUrl(invalidUrl));
+        var shouldThrow = () => _sut.WithBaseUrl(invalidUrl);
 
-        Assert.NotNull(exception);
-        Assert.IsType<ArgumentException>(exception);
+        AssertThrowsArgumentException(() => shouldThrow());
     }
 
     [Fact]
@@ -87,6 +95,10 @@ public class ApiClientConfigurationBuilderTests
 
         Assert.Equal(BASE_URL, result.BaseUrl);
     }
+
+    /*
+     * WithBearerToken config builder method tests.
+     */
 
     [Fact]
     public void WithBearerToken_ChainedWithBuildMethod_ReturnsConfigurationWithBearerTokenSet()
@@ -119,14 +131,16 @@ public class ApiClientConfigurationBuilderTests
     [InlineData("  ")]
     public void WithBearerToken_WithInvalidSecret_ThrowsArgumentException(string secret)
     {
-        _sut.WithBaseUrl(BASE_URL);
+        var sut = GetSutWithBaseUrlSet();
 
-        Exception? result = Record.Exception(() => _sut.WithBearerToken(secret));
+        var shouldThrow = () => sut.WithBearerToken(secret);
 
-        Assert.NotNull(result);
-        Assert.IsType<ArgumentException>(result);
+        AssertThrowsArgumentException(() => shouldThrow());
     }
 
+    /*
+     * WithApiKey config builder method tests.
+     */
     [Fact]
     public void WithApiKey_ChainedWithBuildMethod_ReturnsConfigurationWithApiKeyAndSecretSet()
     {
@@ -173,26 +187,108 @@ public class ApiClientConfigurationBuilderTests
     [InlineData(null, "validSecret")]
     [InlineData("", "validSecret")]
     [InlineData("  ", "validSecret")]
-    public void WithApiKey_WithInvalidKey_ThrowsArgumentException(string key, string secret)
+    [InlineData("validKey", "")]
+    [InlineData("validKey", "  ")]
+    public void WithApiKey_WithInvalidCredentials_ThrowsArgumentException(string key, string secret)
     {
-        _sut.WithBaseUrl(BASE_URL);
+        var sut = GetSutWithBaseUrlSet();
 
-        Exception? result = Record.Exception(() => _sut.WithApiKey(key, secret));
+        var shouldThrow = () => sut.WithApiKey(key, secret);
 
-        Assert.NotNull(result);
-        Assert.IsType<ArgumentException>(result);
+        AssertThrowsArgumentException(() => shouldThrow());
     }
 
     [Theory]
-    [InlineData("validKey", "")]
-    [InlineData("validKey", "  ")]
-    public void WithApiKey_WithInvalidSecret_ThrowsArgumentException(string key, string secret)
+    [InlineData("validKey", "validSecret")]
+    [InlineData("k", "s")]
+    [InlineData("key-with-special-characters-!@£$%^&*()", "validSecret")]
+    [InlineData("validKey", "secret-with-special-characters-!@£$%^&*()")]
+    [InlineData(
+        "key-with-special-characters-!@£$%^&*()",
+        "secret-with-special-characters-!@£$%^&*()"
+    )]
+    public void WithApiKey_BuiltWithValidCredentials_ReturnsConfigurationWithApiKeyValuesSet(
+        string key,
+        string secret
+    )
     {
-        _sut.WithBaseUrl(BASE_URL);
+        var sut = GetSutWithBaseUrlSet();
 
-        Exception? result = Record.Exception(() => _sut.WithApiKey(key, secret));
+        var result = sut.WithApiKey(key, secret).Build();
 
-        Assert.NotNull(result);
-        Assert.IsType<ArgumentException>(result);
+        Assert.NotNull(result.ApiKey);
+        Assert.Equal(key, result.ApiKey.Key);
+        Assert.Equal(secret, result.ApiKey.Secret);
+    }
+
+    /*
+     * WithContentType method tests
+     */
+
+    [Fact]
+    public void WithContentType_ChainedWithBuildMethod_ReturnsConfigurationWithContentTypeSet()
+    {
+        var validContentType = "application/json";
+        var sut = GetSutWithBaseUrlSet();
+
+        ApiClientConfiguration result = sut.WithContentType(ContentType.Json()).Build();
+
+        Assert.NotNull(result.ContentType);
+        Assert.Contains(validContentType, result.ContentType.Value);
+    }
+
+    [Fact]
+    public void WithContentType_NotChainedWithBuildMethod_ReturnsConfigurationWithContentTypeSet()
+    {
+        var validContentType = "application/json";
+        var sut = GetSutWithBaseUrlSet();
+        sut.WithContentType(ContentType.Json());
+
+        ApiClientConfiguration result = sut.Build();
+
+        Assert.NotNull(result.ContentType);
+        Assert.Contains(validContentType, result.ContentType.Value);
+    }
+
+    [Fact]
+    public void WithContentType_WithValidCustomTypeString_ReturnsConfigurationWithCustomContentTypeSet()
+    {
+        var validContentType = "custom/mime-type";
+        var sut = GetSutWithBaseUrlSet();
+
+        ApiClientConfiguration result = sut.WithContentType(validContentType).Build();
+
+        Assert.NotNull(result.ContentType);
+        Assert.Contains(validContentType, result.ContentType.Value);
+    }
+
+    [Theory]
+    [InlineData(null)]
+    [InlineData("")]
+    [InlineData("  ")]
+    public void WithContentType_WithInvalidCustomContentType_ThrowsArgumentException(
+        string contentType
+    )
+    {
+        var sut = GetSutWithBaseUrlSet();
+
+        var shouldThrow = () => sut.WithContentType(contentType);
+
+        AssertThrowsArgumentException(() => shouldThrow());
+    }
+
+    /*
+     * Helper Methods
+     */
+    public ApiClientConfigurationBuilder GetSutWithBaseUrlSet(string baseUrl = BASE_URL)
+    {
+        return _sut.WithBaseUrl(baseUrl);
+    }
+
+    public void AssertThrowsArgumentException(Action methodUnderTest)
+    {
+        var exception = Record.Exception(methodUnderTest);
+        Assert.NotNull(exception);
+        Assert.IsAssignableFrom<ArgumentException>(exception);
     }
 }

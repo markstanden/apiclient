@@ -15,7 +15,7 @@ A simple API client designed to practice building a console application in C#.
     - [x] Consistent formatting
 
 ### Secondary Goals
-- Get the hang of C# naming conventions
+- Practice C# naming conventions
 - Learn to write clean tests using NSubstitute
 - Master proper argument validation patterns in C#
 
@@ -23,7 +23,7 @@ A simple API client designed to practice building a console application in C#.
 
 ### Prerequisites
 - .NET 8.0
-- CSharpier (Global Tool): `dotnet tool install -g csharpier`
+- CSharpier (Global): `dotnet tool install -g csharpier`
 
 ### Git Hooks
 This project uses Git hooks for automated code formatting. To set up:
@@ -57,23 +57,64 @@ The project uses GitHub Actions workflows to enforce code quality:
 
 ## Project Structure & Patterns
 
-### Builder Pattern
+### Project Organization
+
+- Core API client functionality in `ApiClient` project
+- Unit tests in `ApiClient.Tests.Unit`, mirroring structure in Core project.
+
+```bash
+tree -I "bin|obj|*.cs*|*.sln*" --dirsfirst
+```
+
+```
+.
+├── ApiClient
+│   ├── Configuration
+│   │   ├── Auth
+│   │   └── Headers
+│   └── Services
+├── ApiClient.Tests.Unit
+│   ├── Configuration
+│   │   └── Headers
+│   └── Services
+└── README.md
+```
+
+### Design Patterns
+
+#### Builder Pattern
 The project implements the Builder pattern for configuration, allowing flexible and readable setup:
+
 ```csharp
 var config = new ApiClientConfigurationBuilder()
     .WithBaseUrl("https://api.example.com")
     .WithBearerToken("secret")
+    .WithContentType(ContentType.Json())
     .Build();
 ```
+
+#### Static Factory Pattern
+Type-safe configuration options are provided using a variant of the *Static Factory* pattern.
+This provides IDE autocompletion and type safety whilst a public constructor maintains flexibility:
+
+```csharp
+// Using predefined types
+var jsonConfig = Configuration.Headers.ContentType.Json();
+
+// Custom types when needed
+var customType = new Configuration.Headers.ContentType("custom/mime-type");
+```
+
+This approach:
+- **Provides type safety** for common content types
+- Reduces hardcoded magic strings in the codebase
+- Maintains flexibility for custom types
+- Makes code more maintainable.
 
 ### Testing Approach
 - Test-Driven Development (TDD) methodology
 - Using xUnit as the test framework
 - NSubstitute for mocking, particularly useful for HTTP client testing
 - Tests follow Arrange-Act-Assert pattern
-
-### Project Organization
-- Core API client functionality in `ApiClient` project
-- Unit tests in `ApiClient.Tests.Unit`
-- Clear separation of configuration and services
-- Interface-based design for better testability
+- Helpers to reduce code repetition
+- Asserts single behaviours (not implementation) for each test.

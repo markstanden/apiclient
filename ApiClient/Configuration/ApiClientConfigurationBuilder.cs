@@ -1,12 +1,16 @@
 using ApiClient.Configuration.Auth;
+using ApiClient.Configuration.Headers;
 
 namespace ApiClient.Configuration;
 
 public class ApiClientConfigurationBuilder
 {
+    private const string DEFAULT_API_KEY = "X-API-KEY";
+
     private string _baseUrl;
     private BearerAuthConfiguration? _bearerAuthConfiguration;
     private ApiKeyAuthConfiguration? _apiKeyAuthConfiguration;
+    private ContentType _contentType;
 
     /// <summary>
     /// Builds the configuration
@@ -16,12 +20,16 @@ public class ApiClientConfigurationBuilder
     public ApiClientConfiguration Build()
     {
         if (string.IsNullOrEmpty(_baseUrl))
+        {
             throw new InvalidOperationException("Base url not set");
+        }
+
         return new ApiClientConfiguration
         {
             BaseUrl = _baseUrl,
             BearerToken = _bearerAuthConfiguration,
             ApiKey = _apiKeyAuthConfiguration,
+            ContentType = _contentType,
         };
     }
 
@@ -32,13 +40,9 @@ public class ApiClientConfigurationBuilder
     /// <returns>The current builder instance with baseUrl set</returns>
     public ApiClientConfigurationBuilder WithBaseUrl(string baseUrl)
     {
-        if (string.IsNullOrWhiteSpace(baseUrl))
-        {
-            throw new ArgumentException("Provided baseUrl is empty or null.");
-        }
+        ArgumentException.ThrowIfNullOrWhiteSpace(baseUrl, nameof(baseUrl));
 
         _baseUrl = baseUrl;
-
         return this;
     }
 
@@ -51,10 +55,7 @@ public class ApiClientConfigurationBuilder
     /// <returns>The current builder instance with the bearer token set</returns>
     public ApiClientConfigurationBuilder WithBearerToken(string secret)
     {
-        if (string.IsNullOrWhiteSpace(secret))
-        {
-            throw new ArgumentException("Provided secret is empty or null.");
-        }
+        ArgumentException.ThrowIfNullOrWhiteSpace(secret, nameof(secret));
 
         _bearerAuthConfiguration = new BearerAuthConfiguration { Secret = secret };
         return this;
@@ -70,28 +71,49 @@ public class ApiClientConfigurationBuilder
     /// <returns>The current builder instance with the API Key set</returns>
     public ApiClientConfigurationBuilder WithApiKey(string key, string secret)
     {
-        if (string.IsNullOrWhiteSpace(key))
-        {
-            throw new ArgumentException("Provided key is empty or null.");
-        }
-
-        if (string.IsNullOrWhiteSpace(secret))
-        {
-            throw new ArgumentException("Provided secret is empty or null.");
-        }
+        ArgumentException.ThrowIfNullOrWhiteSpace(key, nameof(key));
+        ArgumentException.ThrowIfNullOrWhiteSpace(secret, nameof(secret));
 
         _apiKeyAuthConfiguration = new ApiKeyAuthConfiguration { Key = key, Secret = secret };
-
         return this;
     }
 
+    /// <summary>
+    /// Adds an API Key to the ApiClientConfiguration
+    /// Providing a single argument as the secret results in a default key of X-API-KEY.
+    /// </summary>
+    /// <param name="secret">The API Key Secret</param>
+    /// <returns>The current builder instance with the API Key secret set, with a default key of x-API-KEY</returns>
     public ApiClientConfigurationBuilder WithApiKey(string secret)
     {
-        if (string.IsNullOrWhiteSpace(secret))
-        {
-            throw new ArgumentException("Provided secret is empty or null.");
-        }
+        ArgumentException.ThrowIfNullOrWhiteSpace(secret, nameof(secret));
 
-        return WithApiKey("X-API-KEY", secret);
+        return WithApiKey(DEFAULT_API_KEY, secret);
+    }
+
+    /// <summary>
+    /// Adds content-type header to the request.
+    /// </summary>
+    /// <param name="contentType">the content-type value</param>
+    /// <returns>The current builder instance with the content-type set</returns>
+    public ApiClientConfigurationBuilder WithContentType(ContentType contentType)
+    {
+        ArgumentException.ThrowIfNullOrWhiteSpace(contentType.Value, nameof(contentType));
+
+        _contentType = contentType;
+        return this;
+    }
+
+    /// <summary>
+    /// Adds content-type header to the request.
+    /// </summary>
+    /// <param name="customContentType">the content-type value</param>
+    /// <returns>The current builder instance with the content-type set</returns>
+    public ApiClientConfigurationBuilder WithContentType(string customContentType)
+    {
+        ArgumentException.ThrowIfNullOrWhiteSpace(customContentType, nameof(customContentType));
+
+        _contentType = new ContentType(customContentType);
+        return this;
     }
 }
