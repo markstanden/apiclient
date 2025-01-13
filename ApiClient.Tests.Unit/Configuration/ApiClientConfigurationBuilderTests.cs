@@ -250,6 +250,18 @@ public class ApiClientConfigurationBuilderTests
         Assert.Contains(validContentType, result.ContentType.Value);
     }
 
+    [Fact]
+    public void WithContentType_WithValidCustomTypeString_ReturnsConfigurationWithCustomContentTypeSet()
+    {
+        var validContentType = "custom/mime-type";
+        var sut = GetSutWithBaseUrlSet();
+
+        ApiClientConfiguration result = sut.WithContentType(validContentType).Build();
+
+        Assert.NotNull(result.ContentType);
+        Assert.Contains(validContentType, result.ContentType.Value);
+    }
+
     [Theory]
     [InlineData(null)]
     [InlineData("")]
