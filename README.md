@@ -57,23 +57,46 @@ The project uses GitHub Actions workflows to enforce code quality:
 
 ## Project Structure & Patterns
 
-### Builder Pattern
+### Project Organization
+
+- Core API client functionality in `ApiClient` project
+- Unit tests in `ApiClient.Tests.Unit`
+
+### Design Patterns
+
+#### Builder Pattern
 The project implements the Builder pattern for configuration, allowing flexible and readable setup:
+
 ```csharp
 var config = new ApiClientConfigurationBuilder()
     .WithBaseUrl("https://api.example.com")
     .WithBearerToken("secret")
+    .WithContentType(ContentType.Json())
     .Build();
 ```
+
+#### Static Factory Pattern
+Type-safe configuration options are provided using a variant of the Static Factory pattern.
+This provides IDE autocompletion and type safety while maintaining flexibility:
+
+```csharp
+// Using predefined types
+var jsonConfig = Configuration.Headers.ContentType.Json();
+
+// Custom types when needed
+var customType = new Configuration.Headers.ContentType("custom/mime-type");
+```
+
+This approach:
+- **Provides type safety** for common content types
+- Reduces hardcoded magic strings in the codebase
+- Maintains flexibility for custom types
+- Makes code more maintainable.
 
 ### Testing Approach
 - Test-Driven Development (TDD) methodology
 - Using xUnit as the test framework
 - NSubstitute for mocking, particularly useful for HTTP client testing
 - Tests follow Arrange-Act-Assert pattern
-
-### Project Organization
-- Core API client functionality in `ApiClient` project
-- Unit tests in `ApiClient.Tests.Unit`
-- Clear separation of configuration and services
-- Interface-based design for better testability
+- Helpers to reduce code repitition
+- Assert single behaviours (not implementation) for each test.
