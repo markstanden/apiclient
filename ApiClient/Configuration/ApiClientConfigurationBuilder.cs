@@ -4,6 +4,8 @@ namespace ApiClient.Configuration;
 
 public class ApiClientConfigurationBuilder
 {
+    private const string DEFAULT_API_KEY = "X-API-KEY";
+
     private string _baseUrl;
     private BearerAuthConfiguration? _bearerAuthConfiguration;
     private ApiKeyAuthConfiguration? _apiKeyAuthConfiguration;
@@ -40,7 +42,6 @@ public class ApiClientConfigurationBuilder
         ArgumentException.ThrowIfNullOrWhiteSpace(baseUrl, nameof(baseUrl));
 
         _baseUrl = baseUrl;
-
         return this;
     }
 
@@ -73,23 +74,32 @@ public class ApiClientConfigurationBuilder
         ArgumentException.ThrowIfNullOrWhiteSpace(secret, nameof(secret));
 
         _apiKeyAuthConfiguration = new ApiKeyAuthConfiguration { Key = key, Secret = secret };
-
         return this;
     }
 
+    /// <summary>
+    /// Adds an API Key to the ApiClientConfiguration
+    /// Providing a single argument as the secret results in a default key of X-API-KEY.
+    /// </summary>
+    /// <param name="secret">The API Key Secret</param>
+    /// <returns>The current builder instance with the API Key secret set, with a default key of x-API-KEY</returns>
     public ApiClientConfigurationBuilder WithApiKey(string secret)
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(secret, nameof(secret));
 
-        return WithApiKey("X-API-KEY", secret);
+        return WithApiKey(DEFAULT_API_KEY, secret);
     }
 
+    /// <summary>
+    /// Adds content-type header to the request.
+    /// </summary>
+    /// <param name="contentType">the content-type value</param>
+    /// <returns>The current builder instance with the content-type set</returns>
     public ApiClientConfigurationBuilder WithContentType(string contentType)
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(contentType, nameof(contentType));
 
         _contentType = contentType;
-
         return this;
     }
 }
