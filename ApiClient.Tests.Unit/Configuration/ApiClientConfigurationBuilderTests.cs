@@ -1,4 +1,5 @@
 using ApiClient.Configuration;
+using ApiClient.Configuration.Headers;
 using JetBrains.Annotations;
 
 namespace ApiClient.Tests.Unit.Configuration;
@@ -230,10 +231,10 @@ public class ApiClientConfigurationBuilderTests
         var validContentType = "application/json";
         var sut = GetSutWithBaseUrlSet();
 
-        ApiClientConfiguration result = sut.WithContentType(validContentType).Build();
+        ApiClientConfiguration result = sut.WithContentType(ContentType.Json()).Build();
 
         Assert.NotNull(result.ContentType);
-        Assert.Contains(validContentType, result.ContentType);
+        Assert.Contains(validContentType, result.ContentType.Value);
     }
 
     [Fact]
@@ -241,19 +242,21 @@ public class ApiClientConfigurationBuilderTests
     {
         var validContentType = "application/json";
         var sut = GetSutWithBaseUrlSet();
-        sut.WithContentType(validContentType);
+        sut.WithContentType(ContentType.Json());
 
         ApiClientConfiguration result = sut.Build();
 
         Assert.NotNull(result.ContentType);
-        Assert.Contains(validContentType, result.ContentType);
+        Assert.Contains(validContentType, result.ContentType.Value);
     }
 
     [Theory]
     [InlineData(null)]
     [InlineData("")]
     [InlineData("  ")]
-    public void WithContentType_WithInvalidContentType_ThrowsArgumentException(string contentType)
+    public void WithContentType_WithInvalidCustomContentType_ThrowsArgumentException(
+        string contentType
+    )
     {
         var sut = GetSutWithBaseUrlSet();
 

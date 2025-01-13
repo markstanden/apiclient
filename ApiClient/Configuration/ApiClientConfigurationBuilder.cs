@@ -1,4 +1,5 @@
 using ApiClient.Configuration.Auth;
+using ApiClient.Configuration.Headers;
 
 namespace ApiClient.Configuration;
 
@@ -9,7 +10,7 @@ public class ApiClientConfigurationBuilder
     private string _baseUrl;
     private BearerAuthConfiguration? _bearerAuthConfiguration;
     private ApiKeyAuthConfiguration? _apiKeyAuthConfiguration;
-    private string _contentType;
+    private ContentType _contentType;
 
     /// <summary>
     /// Builds the configuration
@@ -95,11 +96,24 @@ public class ApiClientConfigurationBuilder
     /// </summary>
     /// <param name="contentType">the content-type value</param>
     /// <returns>The current builder instance with the content-type set</returns>
-    public ApiClientConfigurationBuilder WithContentType(string contentType)
+    public ApiClientConfigurationBuilder WithContentType(ContentType contentType)
     {
-        ArgumentException.ThrowIfNullOrWhiteSpace(contentType, nameof(contentType));
+        ArgumentException.ThrowIfNullOrWhiteSpace(contentType.Value, nameof(contentType));
 
         _contentType = contentType;
+        return this;
+    }
+
+    /// <summary>
+    /// Adds content-type header to the request.
+    /// </summary>
+    /// <param name="customContentType">the content-type value</param>
+    /// <returns>The current builder instance with the content-type set</returns>
+    public ApiClientConfigurationBuilder WithContentType(string customContentType)
+    {
+        ArgumentException.ThrowIfNullOrWhiteSpace(customContentType, nameof(customContentType));
+
+        _contentType = new ContentType(customContentType);
         return this;
     }
 }
